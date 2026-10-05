@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B1E3D">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Antibiblioteca">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Antibiblioteca · Archivo de lecturas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ECE6D8; --paper:#F6F2E8; --ink:#16213A; --muted:#5B6278; --rule:#C9BFA6;
+  --gold:#A8843C; --gold-soft:#C9A85C; --wood:#4A3726; --wood-edge:#2E2117;
+  --lit:#0B1E3D; --fil:#5E1F2A; --his:#24442F; --cie:#1F3F5C; --art:#6B4A12; --act:#3D3D4A;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0A1426; --paper:#111D35; --ink:#E9E2D0; --muted:#A6A9B8; --rule:#2A3654;
+    --gold:#C9A85C; --gold-soft:#D9BD7A; --wood:#2A1F16; --wood-edge:#140E09;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0A1426; --paper:#111D35; --ink:#E9E2D0; --muted:#A6A9B8; --rule:#2A3654;
+  --gold:#C9A85C; --gold-soft:#D9BD7A; --wood:#2A1F16; --wood-edge:#140E09;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Source Serif 4",Georgia,"Times New Roman",serif;font-size:17px;line-height:1.6}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+
+header.hero{padding:56px 0 28px;border-bottom:1px solid var(--rule)}
+.hero h1{font-family:"Cormorant Garamond",Georgia,serif;font-weight:600;font-size:clamp(2.6rem,7vw,4.6rem);line-height:1;margin:0;letter-spacing:-.01em}
+.hero .sub{font-family:"Cormorant Garamond",Georgia,serif;font-style:italic;font-size:clamp(1.15rem,2.6vw,1.5rem);color:var(--muted);margin:.4rem 0 1.4rem}
+.hero p{max-width:62ch;margin:0 0 .8rem}
+.hero .count{color:var(--gold);font-weight:600}
+
+.tools{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding:14px 0;border-bottom:1px solid var(--rule)}
+.tools .wrap{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.search{flex:1 1 240px;min-width:0;font:inherit;font-size:16px;padding:9px 12px;border:1px solid var(--rule);background:var(--paper);color:var(--ink);border-radius:2px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:14px;padding:5px 11px;border:1px solid var(--rule);background:transparent;color:var(--ink);cursor:pointer;border-radius:999px;display:inline-flex;align-items:center;gap:6px}
+.chip i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.view{font:inherit;font-size:14px;padding:5px 11px;border:1px solid var(--gold);color:var(--gold);background:transparent;cursor:pointer;border-radius:2px}
+
+main{padding:34px 0 60px}
+.month{margin:0 0 42px}
+.month h2{font-family:"Cormorant Garamond",Georgia,serif;font-weight:600;font-size:1.7rem;margin:0 0 4px}
+.month .n{color:var(--muted);font-size:.9rem;margin:0 0 12px}
+.shelf{display:flex;align-items:flex-end;gap:3px;overflow-x:auto;padding:16px 14px 0;min-height:240px;
+  background:linear-gradient(to bottom,transparent 0,transparent calc(100% - 16px),var(--wood) calc(100% - 16px),var(--wood-edge) 100%);}
+.spine{flex:0 0 auto;border:0;cursor:pointer;color:#F3E9CF;position:relative;
+  writing-mode:vertical-rl;transform:rotate(180deg);text-align:left;
+  font-family:"Cormorant Garamond",Georgia,serif;font-weight:600;font-size:15px;line-height:1.1;
+  padding:12px 6px;margin-bottom:16px;border-radius:2px 2px 0 0;
+  box-shadow:inset 3px 0 0 rgba(255,255,255,.08),inset -2px 0 0 rgba(0,0,0,.25);
+  transition:transform .18s ease,opacity .2s ease}
+.spine::before,.spine::after{content:"";position:absolute;left:4px;right:4px;height:1px;background:var(--gold-soft);opacity:.8}
+.spine::before{top:10px}.spine::after{bottom:10px}
+.spine:hover{transform:rotate(180deg) translateY(8px)}
+.spine.dim{opacity:.15}
+.spine span{display:block;max-height:100%;overflow:hidden}
+
+.catalog{display:none}
+body.list .shelves{display:none}
+body.list .catalog{display:block}
+.entry{display:grid;grid-template-columns:7.5rem 1fr;gap:6px 22px;padding:18px 0;border-top:1px solid var(--rule);cursor:pointer}
+.entry:hover h3{color:var(--gold)}
+.entry .d{color:var(--muted);font-size:.9rem}
+.entry h3{font-family:"Cormorant Garamond",Georgia,serif;font-size:1.45rem;font-weight:600;margin:0;line-height:1.15}
+.entry p{margin:4px 0 0;max-width:70ch;color:var(--muted)}
+.entry .cat{font-size:.85rem;display:inline-flex;align-items:center;gap:6px}
+.entry .cat i{width:9px;height:9px;border-radius:50%}
+.empty{padding:40px 0;color:var(--muted);font-style:italic}
+
+dialog{border:0;padding:0;max-width:640px;width:calc(100% - 32px);background:var(--paper);color:var(--ink);border-top:6px solid var(--c,var(--lit));box-shadow:0 20px 60px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(6,12,25,.55)}
+.dlg{padding:26px 28px 24px}
+.dlg .meta{color:var(--muted);font-size:.9rem;display:flex;gap:14px;flex-wrap:wrap}
+.dlg h3{font-family:"Cormorant Garamond",Georgia,serif;font-size:2rem;line-height:1.1;margin:.4rem 0 .8rem;font-weight:600}
+.dlg p{margin:0 0 1rem}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 1.2rem;padding:0;list-style:none}
+.tags li{font-size:.85rem;border:1px solid var(--rule);padding:2px 9px;border-radius:999px}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.btn{font:inherit;font-size:15px;padding:8px 14px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);text-decoration:none;cursor:pointer;border-radius:2px}
+.btn.ghost{background:transparent;color:var(--ink)}
+footer{border-top:1px solid var(--rule);padding:22px 0 40px;color:var(--muted);font-size:.9rem}
+@media (max-width:560px){.entry{grid-template-columns:1fr}.dlg{padding:22px 20px}}
+@media (prefers-reduced-motion:reduce){.spine{transition:none}}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <h1>Antibiblioteca</h1>
+    <div class="sub">Gestor de lecturas a la manera de Umberto Eco</div>
+    <p>Eco no guardaba sus treinta mil libros para presumir de lo leído, sino para tener siempre a la vista lo que le faltaba por saber. Este archivo hace lo mismo con las conversaciones del proyecto: cada lomo es una sesión de estudio, ordenada por meses en su estante.</p>
+    <p><span class="count" id="total"></span> conversaciones archivadas, de junio a octubre de 2026. Pulsa un lomo para abrir su ficha.</p>
+  </div>
+</header>
+
+<div class="tools">
+  <div class="wrap">
+    <input class="search" id="q" type="search" placeholder="Buscar autor, obra o tema…" aria-label="Buscar en el archivo">
+    <div class="chips" id="chips" role="group" aria-label="Filtrar por materia"></div>
+    <button class="view" id="view" type="button">Ver como índice</button>
+  </div>
+</div>
+
+<main class="wrap">
+  <section class="shelves" id="shelves" aria-label="Estanterías por mes"></section>
+  <section class="catalog" id="catalog" aria-label="Índice del archivo"></section>
+</main>
+
+<footer>
+  <div class="wrap">Archivo generado a partir de las conversaciones del proyecto «Gestor Antibiblioteca Umberto Ecco». Las fichas son síntesis propias; no reproducen texto de las obras.</div>
+</footer>
+
+<dialog id="dlg" aria-labelledby="dlgTitle">
+  <div class="dlg">
+    <div class="meta"><span id="dlgCat"></span><span id="dlgDate"></span></div>
+    <h3 id="dlgTitle"></h3>
+    <p id="dlgText"></p>
+    <ul class="tags" id="dlgTags"></ul>
+    <div class="actions">
+      <a class="btn" id="dlgLink" target="_blank" rel="noopener">Abrir conversación</a>
+      <button class="btn ghost" id="dlgClose" type="button">Cerrar</button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+const CATS = {
+  lit:{n:"Literatura",v:"--lit",c:"#0B1E3D"},
+  fil:{n:"Filosofía y pensamiento",v:"--fil",c:"#5E1F2A"},
+  his:{n:"Historia",v:"--his",c:"#24442F"},
+  cie:{n:"Ciencia",v:"--cie",c:"#1F3F5C"},
+  art:{n:"Arte y religión",v:"--art",c:"#6B4A12"},
+  act:{n:"Actualidad y artículos",v:"--act",c:"#3D3D4A"}
+};
+const U = "https://claude.ai/chat/";
+const D = [
+ ["2026-10-04","lit","Las pequeñas virtudes","Natalia Ginzburg","Presentación de los once ensayos (Acantilado), resumen pieza a pieza en sus dos partes —la autobiográfica y la reflexiva— y biografía de la autora: Turín, Einaudi, Pavese, el Premio Strega y su etapa como diputada.",["Ginzburg","ensayo","Italia","Einaudi"],"23bd2e9d-fc53-4045-9789-adbb4ba1520c"],
+ ["2026-10-02","lit","Nosotros, de Zamiatin","Yevgueni Zamiatin","La novela precursora de Huxley y Orwell: trama, temas y la sociedad organizada como una ecuación. Enlace con el taylorismo bolchevique, el simbolismo de la raíz de −1 y, como derivada, la figura de Vladislav Surkov.",["distopía","URSS","taylorismo","Surkov"],"74f12e4a-45e5-4507-9d64-604226cf38e8"],
+ ["2026-09-27","lit","La biblioteca de la medianoche","Matt Haig","Resumen de la novela: la biblioteca entre la vida y la muerte, las vidas alternativas de la protagonista y su reflexión sobre el arrepentimiento y el sentido de la vida propia.",["Haig","novela","vidas paralelas"],"53f37707-cd99-4125-b9f7-18de8d9f62ae"],
+ ["2026-09-27","lit","El libro total","Mallarmé · Calvino","De la plataforma digital El Libro Total al Livre inacabado de Mallarmé y a Si una noche de invierno un viajero de Calvino: el libro como objeto absoluto, permutable o infinito.",["Mallarmé","Calvino","Borges","libro infinito"],"5c2c1316-3459-4281-bc2d-60d53261c929"],
+ ["2026-09-20","lit","Zweig: Mendel y el ajedrez","Stefan Zweig","A partir de un artículo de Nazareth Castellanos sobre lectura y memoria: origen y resumen de «Mendel el de los libros», resumen detallado e ideas clave de Novela de ajedrez, leídos desde el texto original.",["Zweig","Mendel","Novela de ajedrez","memoria"],"c3c110fd-2343-41de-9692-6411d9c52e8e"],
+ ["2026-09-19","fil","Gracián y el arte de hablar","Baltasar Gracián · Carmine Gallo","El arte de la prudencia frente a Hable como en TED: aforismos sobre discreción y dominio de sí junto a las claves de la comunicación moderna. La regla de los 18 minutos y qué es TED.",["Gracián","prudencia","oratoria","TED"],"f471dc1c-8416-45c7-b508-694a6b7b6fb0"],
+ ["2026-09-13","lit","Julio Verne y Ceuta","Julio Verne","Rastreo de Ceuta en los Viajes extraordinarios: presencia mínima en Héctor Servadac y resumen minucioso del capítulo «El presidio de Ceuta» de Matías Sandorf, con la escena de hipnosis. San Daniel y la Virgen de África.",["Verne","Ceuta","Matías Sandorf"],"6901f9ab-8be3-4df9-a6fd-7ee9f424c035"],
+ ["2026-09-12","lit","Ensayo sobre la ceguera","José Saramago","Análisis general, el díptico ceguera–lucidez en tabla comparativa y resumen de las dieciocho secciones narrativas leídas del PDF.",["Saramago","alegoría","díptico"],"c73f6dc9-fc94-428e-82dc-f1229aa7aad9"],
+ ["2026-09-07","lit","Vasili Grossman","Vida y destino · Stalingrado","Bibliografía, resumen e ideas clave de Vida y destino, el tema científico y el arco moral de Víktor Shtrum; resumen de Stalingrado y orden de lectura. La «bondad insensata» y la equivalencia de los totalitarismos.",["Grossman","totalitarismo","Shtrum","URSS"],"aa92dc35-62f2-470d-8cae-a9a25420fd5a"],
+ ["2026-09-07","art","Ryo Tatsuki","Watashi ga Mita Mirai","La mangaka de los sueños proféticos: El futuro que vi, la disputa con su editorial por la reedición de 2021 y su libro autoeditado posterior.",["manga","Japón","profecía"],"d7f858f2-681a-4698-83de-d5cfdc7f4a3c"],
+ ["2026-08-30","lit","El Aleph","Jorge Luis Borges","Los diecisiete cuentos del libro y sus obsesiones; qué es exactamente el Aleph y su paralelo con el infinito de Cantor.",["Borges","infinito","Cantor"],"1d850a5e-0b95-4082-afcf-4e634e06d3d8"],
+ ["2026-08-29","lit","Los viajes de Gulliver","Jonathan Swift","A los trescientos años: resumen de la novela, sus cuatro viajes satíricos, el contexto augusto e ilustrado y biografía de Swift. Antes, reseña de Muskismo (Slobodian y Tarnoff).",["Swift","sátira","Ilustración","Musk"],"1596aa76-cef2-4fab-88bd-68abeba275c0"],
+ ["2026-08-29","his","Jovellanos","Gaspar Melchor de Jovellanos","Reseña de la biografía de Benigno Pendás, vida e ideas clave del ilustrado y lecturas recomendadas, con los Diarios como puerta de entrada.",["Ilustración","España","Pendás"],"df48b29f-1a15-4ffa-a9f2-2f25fc8535da"],
+ ["2026-08-29","fil","Sartre y Camus","Existencialismo y absurdo","La ruptura de su amistad tras El hombre rebelde, los matices de su posición ante el comunismo, el existencialismo sartreano, la filosofía del absurdo y una tabla de diferencias.",["Sartre","Camus","absurdo"],"ecf9f189-caed-4d1f-95a3-e9e10e8baef6"],
+ ["2026-08-25","lit","1Q84, libro 3","Haruki Murakami","Resumen del tercer libro, su relación conceptual con 1984 de Orwell y explicación sencilla del «control metafísico». De entrada, el chiste de e y π y la identidad de Euler.",["Murakami","Orwell","Euler"],"828f996d-60c9-48b9-8dcc-6901a704641a"],
+ ["2026-08-23","his","Willi Münzenberg","El millonario rojo","El arquitecto de la propaganda comunista en Occidente, bibliografía en castellano y resumen de El fin de la inocencia de Stephen Koch.",["propaganda","Komintern","Koch"],"a7b096e2-21bb-4903-af40-fdfb1462f8a6"],
+ ["2026-08-22","lit","Sátántangó","László Krasznahorkai","El autor, la adaptación de Béla Tarr y un resumen extenso: estructura en danza, episodios clave, temas y estilo.",["Krasznahorkai","Hungría","Béla Tarr"],"ddd02b78-00e0-4b68-801a-29b45253a664"],
+ ["2026-08-20","his","El infinito en un junco","Irene Vallejo","Resumen y desglose por capítulos; origen de la escritura, Grecia y el libro, la Biblioteca de Alejandría en detalle e Hipatia, con el matiz entre el Serapeo y su asesinato.",["Vallejo","Alejandría","Hipatia","libro"],"cf48821b-d075-4e6a-b0af-26d61b66e5c6"],
+ ["2026-08-20","lit","El nombre de la rosa","Umberto Eco","Del resumen de la novela al segundo libro perdido de la Poética; Sócrates, Platón y Aristóteles, la biblioteca de Cicerón, Enheduanna, san Jerónimo y las Pinakes de Calímaco.",["Eco","Aristóteles","bibliotecas","Antigüedad"],"2bb3f5a1-5e4b-49c2-bae8-72831f401112"],
+ ["2026-08-18","lit","Ensayo sobre la lucidez","José Saramago","Visión de cada novela y comparación en seis dimensiones: la ceguera como degradación moral frente al voto en blanco como lucidez colectiva.",["Saramago","voto en blanco","política"],"70c1c7b3-2e5f-4516-be4b-29120a741e28"],
+ ["2026-08-16","his","Puyi y Taiwán","El último emperador","Corrección: Puyi no fue a Taiwán. Captura soviética en 1945, entrega a la República Popular, reeducación, indulto en 1959 y vida en Pekín hasta 1967.",["China","Puyi","Manchukuo"],"20818c2b-eb81-4b34-bf7e-c118fd0994f7"],
+ ["2026-08-16","lit","El jardín de los Finzi-Contini","Giorgio Bassani","Ferrara a finales de los años treinta: el narrador, Micòl, el jardín como refugio ilusorio y el epílogo trágico. La película de De Sica.",["Bassani","Ferrara","Holocausto"],"d4c815bb-04cf-4894-b4b3-38af001c8f80"],
+ ["2026-08-16","lit","La biblioteca de Babel","Jorge Luis Borges","El universo como biblioteca infinita y su comparación con la antibiblioteca de Eco: humildad personal ante lo no leído frente a la inaccesibilidad cósmica del saber.",["Borges","antibiblioteca","Eco","infinito"],"8124f2c4-2037-4833-8738-98931c2c7ac2"],
+ ["2026-08-11","his","El último emperador de China","Puyi","Vida de Puyi de 1908 a 1967, los años de 1917 a 1934, su adopción ritual y por qué la Ciudad Prohibida sobrevivió a la República.",["China","Qing","Ciudad Prohibida"],"0f629dbe-642d-4e6b-8b43-36d1e8ac8942"],
+ ["2026-08-10","his","Hildegarda de Bingen","Mística, compositora y naturalista","Filósofas medievales, la vida y obra de Hildegarda, el lúpulo en su Physica y los tipos de fermentación de la cerveza.",["Edad Media","Hildegarda","cerveza"],"6acfbb43-632a-4439-8707-1185f8668f76"],
+ ["2026-07-25","fil","Ortega y Gasset","Misión de la Universidad · La rebelión de las masas","Ideas clave de ambos libros, el «bárbaro especialista» ante la IA, un esquema comparado, su europeísmo y el origen exacto de «Yo soy yo y mi circunstancia».",["Ortega","universidad","masas","Europa"],"1f54d5f4-aad7-41e2-a066-607b2ac0fb98"],
+ ["2026-07-23","his","La trilogía de César","Santiago Posteguillo","Cronologías detalladas de Roma soy yo, Maldita Roma y Los tres mundos, cada una entregada en PDF azul marino y oro.",["Roma","Julio César","Posteguillo","PDF"],"b00ed351-3814-4b42-a890-d37814e585ca"],
+ ["2026-07-16","lit","Rojo y negro","Stendhal","Resumen completo y ficha de lectura en PDF, primero sobre fondo azul y después en versión blanca con detalles dorados.",["Stendhal","Julien Sorel","PDF"],"adec22e4-6f69-4532-ba6b-d4b494c335c7"],
+ ["2026-07-12","art","Costanza, la musa de Bernini","Rachel Blackmore","Costanza Bonarelli y el escándalo con Bernini, el busto del Bargello y la novela de 2025 que reescribe su historia.",["Bernini","Barroco","Roma"],"54154e64-84b4-415f-8755-ad959926097b"],
+ ["2026-07-12","lit","El coronel no tiene quien le escriba","Gabriel García Márquez","Visión general, resumen en seis episodios y el sentido de su célebre palabra final como indignación digna.",["García Márquez","Colombia","dignidad"],"f621421f-de32-49c8-bdc2-60d1e0189a8f"],
+ ["2026-07-12","art","El affaire Arnolfini","Jean-Philippe Postel","Ensayo sobre el cuadro de Van Eyck: la lectura nupcial de Panofsky frente a la hipótesis de la esposa muerta, con sus pruebas y la recepción crítica.",["Van Eyck","pintura","Panofsky"],"6384a04c-9636-4199-b946-6023f5b7fb96"],
+ ["2026-07-12","lit","Los cuatro jinetes del Apocalipsis","Vicente Blasco Ibáñez","Resumen temático y desglose en tres partes: Argentina y París, la guerra que divide a la familia y el desenlace apocalíptico.",["Blasco Ibáñez","Primera Guerra Mundial"],"7922b00f-d714-486e-8572-5548a88690d7"],
+ ["2026-07-11","lit","El corazón de las tinieblas","Joseph Conrad","La edición ampliada de Jorge Luis Marzo, las tres partes de la novela, la cronología política del Congo y la división actual del país.",["Conrad","Congo","colonialismo"],"2d4264c2-7c32-4ebd-a650-0d1d6ef2f9d9"],
+ ["2026-07-11","fil","Albert Camus","El extranjero · El mito de Sísifo","Biografía, estructura e ideas de El extranjero, resumen y filosofía de El mito de Sísifo y una explicación sencilla del método de Sísifo.",["Camus","absurdo","Sísifo"],"3d587ac1-18c8-4ab0-8589-c810f31e974c"],
+ ["2026-07-11","lit","Alicia en el País de las Maravillas","Lewis Carroll","Resumen por capítulos, ideas clave, las matemáticas de Dodgson y una lectura crítica de su supuesto simbolismo masónico.",["Carroll","lógica","matemáticas"],"5c835971-3940-4c67-bf72-4108bf9ae3fe"],
+ ["2026-07-11","his","Los siete pilares de la sabiduría","T. E. Lawrence","Resumen de los 122 capítulos en Word y PDF, biografía, ideas clave y las promesas británicas a los árabes: McMahon, Sykes-Picot y Balfour.",["Lawrence","Revuelta árabe","Oriente Próximo"],"c194bc52-8c91-4873-b8f3-b30997a9e166"],
+ ["2026-07-11","lit","El Ocho","Katherine Neville","Las dos tramas, la Francia revolucionaria y 1972, en torno al ajedrez de Montglane, y su continuación, El fuego.",["Neville","ajedrez","thriller erudito"],"731332a3-0151-4eea-8c60-351e8e897ae2"],
+ ["2026-07-11","lit","Ulises","James Joyce","Estructura homérica, resumen e ideas clave del Ulises; en la misma sesión, el matemático Julio Rey Pastor y sus aportaciones.",["Joyce","modernismo","Rey Pastor"],"8ded1336-1310-47ed-b60c-ff03c880d7bc"],
+ ["2026-07-02","his","Yugoslavia","Pasado, presente y futuro","Informe completo desde el siglo XIX hasta 2026 y cronología en PDF, con la corrección tipográfica para los nombres serbocroatas.",["Balcanes","Tito","PDF"],"82ba8ba0-8d9d-4f05-a18e-2cbe13156884"],
+ ["2026-06-28","art","Pellegrino Ernetti y el cronovisor","Monje benedictino","El musicólogo veneciano que dijo haber visto el pasado: la entrevista de 1972, las pruebas desmentidas y su legado real.",["cronovisor","Vaticano","musicología"],"0a7c17cd-0c1b-4d33-b829-7a697859dbba"],
+ ["2026-06-27","cie","El instante Aleph","Greg Egan","De La sombra de los dos soles a la novela de Egan: resumen de sus treinta capítulos, la teoría del todo, el universo participativo de Wheeler y Orch-OR.",["Egan","física cuántica","Wheeler","conciencia"],"1cd174ec-ff56-4a3d-a64a-cc39958fcc51"],
+ ["2026-06-26","fil","La antibiblioteca de Umberto Eco","Nassim Taleb · El cisne negro","El origen del proyecto: la antibiblioteca en El cisne negro, resumen por capítulos, el concepto de cisne negro, Taleb frente a Gladwell y su relación con la IA.",["antibiblioteca","Taleb","incertidumbre"],"df08bdf1-b586-452d-a904-cef58fdf9c8a"],
+ ["2026-06-26","fil","Spinoza para principiantes","Baruch Spinoza","Biografía, monismo y determinismo, el conatus, los tres géneros de conocimiento, los afectos y su pensamiento político.",["Spinoza","Ética","racionalismo"],"5c52e8a0-b671-4ccc-9706-549c5f8eb73a"],
+ ["2026-06-26","cie","Arsuaga: La respuesta y Amalur","Juan Luis Arsuaga","La evolución como respuesta, el diálogo con Teilhard de Chardin, la noosfera y el punto Omega; once capítulos de Amalur y una guía didáctica en PDF.",["evolución","Teilhard","conciencia","PDF"],"a1e868bb-44d6-4d86-947d-f955794b5d3e"],
+ ["2026-06-19","lit","Crimen y castigo en PDF","Fiódor Dostoievski","Conversión de las notas de ideas clave en un PDF de nueve secciones con paleta carmesí y oro.",["Dostoievski","PDF"],"a8fc384e-c8d7-4088-8735-3ed87012a3a2"],
+ ["2026-06-18","lit","Crimen y castigo y Los hermanos Karamázov","Fiódor Dostoievski","Dos fichas de ideas clave en PDF a partir de las novelas completas: contexto, trama, estructura, personajes, temas y legado.",["Dostoievski","Rusia","PDF"],"bd5feb0f-ce92-420e-8da7-7b3f3ca39a60"],
+ ["2026-06-12","his","Stonehenge","Artículo de la BBC","Siete ideas clave en PDF sobre el origen escocés de la Piedra del Altar y su posible viaje por Doggerland.",["prehistoria","Stonehenge","PDF"],"d1ffd6ff-8b9b-4001-afdc-5ad6345802d4"],
+ ["2026-06-12","act","Estados Unidos y Cuba","Análisis del CSIS","Ideas clave en PDF de los cinco escenarios de conflicto estudiados por el CSIS y la estrategia de resistencia cubana.",["geopolítica","Cuba","PDF"],"aa9a5bd7-b0d3-4f53-b757-9978da3cc597"],
+ ["2026-06-12","act","Artículos en inglés B2 y C1","Lawrence · Irlanda del Norte · Flann O'Brien","Tres fichas de ideas clave en PDF y, después, la trama y el título de At Swim-Two-Birds.",["inglés","Flann O'Brien","PDF"],"03224a97-5a01-462b-a67c-f093a8dd759b"]
+].map((r,i)=>({id:i,date:r[0],cat:r[1],title:r[2],who:r[3],text:r[4],tags:r[5],url:U+r[6]}));
+
+const MONTHS=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+const fmt=d=>{const[y,m,dd]=d.split("-");return `${+dd} de ${MONTHS[+m-1]} de ${y}`};
+const norm=s=>s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+const hash=s=>{let h=0;for(const ch of s)h=(h*31+ch.charCodeAt(0))>>>0;return h};
+
+document.getElementById("total").textContent=D.length;
+const state={q:"",cat:null};
+
+const chips=document.getElementById("chips");
+Object.entries(CATS).forEach(([k,c])=>{
+  const b=document.createElement("button");
+  b.className="chip";b.type="button";b.setAttribute("aria-pressed","false");
+  b.innerHTML=`<i style="background:var(${c.v})"></i>${c.n}`;
+  b.onclick=()=>{state.cat=state.cat===k?null:k;[...chips.children].forEach(x=>x.setAttribute("aria-pressed","false"));if(state.cat)b.setAttribute("aria-pressed","true");apply()};
+  chips.appendChild(b);
+});
+
+const match=e=>{
+  if(state.cat&&e.cat!==state.cat)return false;
+  if(!state.q)return true;
+  return norm([e.title,e.who,e.text,e.tags.join(" "),CATS[e.cat].n].join(" ")).includes(norm(state.q));
+};
+
+function buildShelves(){
+  const box=document.getElementById("shelves");box.innerHTML="";
+  const groups={};
+  D.forEach(e=>{const k=e.date.slice(0,7);(groups[k]=groups[k]||[]).push(e)});
+  Object.keys(groups).sort().reverse().forEach(k=>{
+    const[y,m]=k.split("-");const list=groups[k].slice().sort((a,b)=>a.date.localeCompare(b.date));
+    const sec=document.createElement("div");sec.className="month";
+    sec.innerHTML=`<h2>${MONTHS[+m-1][0].toUpperCase()+MONTHS[+m-1].slice(1)} de ${y}</h2><p class="n">${list.length} ${list.length===1?"volumen":"volúmenes"}</p>`;
+    const shelf=document.createElement("div");shelf.className="shelf";
+    list.forEach(e=>{
+      const h=hash(e.title);
+      const b=document.createElement("button");
+      b.className="spine";b.type="button";b.dataset.id=e.id;
+      b.style.background=`var(${CATS[e.cat].v})`;
+      b.style.height=(168+h%52)+"px";
+      b.style.width=(36+h%16)+"px";
+      b.setAttribute("aria-label",`${e.title}, ${fmt(e.date)}`);
+      b.innerHTML=`<span>${e.title}</span>`;
+      b.onclick=()=>openDlg(e);
+      shelf.appendChild(b);
+    });
+    sec.appendChild(shelf);box.appendChild(sec);
+  });
+}
+
+function buildCatalog(){
+  const box=document.getElementById("catalog");box.innerHTML="";
+  const list=D.filter(match).sort((a,b)=>b.date.localeCompare(a.date));
+  if(!list.length){box.innerHTML='<p class="empty">Ninguna conversación coincide. Prueba con otro autor o quita el filtro de materia.</p>';return}
+  list.forEach(e=>{
+    const a=document.createElement("article");a.className="entry";a.tabIndex=0;
+    a.innerHTML=`<div><div class="d">${fmt(e.date)}</div><div class="cat"><i style="background:var(${CATS[e.cat].v})"></i>${CATS[e.cat].n}</div></div><div><h3>${e.title}</h3><div class="d">${e.who}</div><p>${e.text}</p></div>`;
+    a.onclick=()=>openDlg(e);
+    a.onkeydown=ev=>{if(ev.key==="Enter")openDlg(e)};
+    box.appendChild(a);
+  });
+}
+
+function apply(){
+  document.querySelectorAll(".spine").forEach(s=>s.classList.toggle("dim",!match(D[s.dataset.id])));
+  buildCatalog();
+}
+
+const dlg=document.getElementById("dlg");
+function openDlg(e){
+  dlg.style.setProperty("--c",`var(${CATS[e.cat].v})`);
+  document.getElementById("dlgCat").textContent=CATS[e.cat].n;
+  document.getElementById("dlgDate").textContent=fmt(e.date);
+  document.getElementById("dlgTitle").textContent=e.title;
+  document.getElementById("dlgText").textContent=`${e.who}. ${e.text}`;
+  document.getElementById("dlgTags").innerHTML=e.tags.map(t=>`<li>${t}</li>`).join("");
+  document.getElementById("dlgLink").href=e.url;
+  if(dlg.showModal)dlg.showModal();else dlg.setAttribute("open","");
+}
+document.getElementById("dlgClose").onclick=()=>dlg.close();
+dlg.addEventListener("click",ev=>{if(ev.target===dlg)dlg.close()});
+
+document.getElementById("q").addEventListener("input",ev=>{state.q=ev.target.value.trim();apply()});
+const vb=document.getElementById("view");
+vb.onclick=()=>{const l=document.body.classList.toggle("list");vb.textContent=l?"Ver estanterías":"Ver como índice"};
+
+buildShelves();buildCatalog();
+
+if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{})})}
+</script>
+</body>
+</html>
