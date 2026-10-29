@@ -215,7 +215,7 @@ const D = [
 
 const MONTHS=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
 const fmt=d=>{const[y,m,dd]=d.split("-");return `${+dd} de ${MONTHS[+m-1]} de ${y}`};
-const norm=s=>s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+const norm=s=>s.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
 const hash=s=>{let h=0;for(const ch of s)h=(h*31+ch.charCodeAt(0))>>>0;return h};
 
 document.getElementById("total").textContent=D.length;
